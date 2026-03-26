@@ -59,7 +59,7 @@ declare class TorchHapticsModule extends NativeModule<TorchHapticsModuleEvents> 
     playerId: string,
     parameterId: string,
     value: number,
-    time: number
+    time: number,
   ): Promise<void>;
 
   /**

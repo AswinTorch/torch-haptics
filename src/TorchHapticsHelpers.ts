@@ -45,7 +45,7 @@ export function supportsHaptics(): boolean {
 export async function playHaptic(pattern: HapticPattern): Promise<void> {
   if (!enginePrepared) {
     throw new Error(
-      "Haptics engine not initialized. Call initializeHaptics() first."
+      "Haptics engine not initialized. Call initializeHaptics() first.",
     );
   }
 
@@ -63,11 +63,11 @@ export async function playHaptic(pattern: HapticPattern): Promise<void> {
  * @returns Promise<HapticsPlayer> - Player instance for controlling playback
  */
 export async function createHapticPlayer(
-  pattern: HapticPattern
+  pattern: HapticPattern,
 ): Promise<HapticsPlayer> {
   if (!enginePrepared) {
     throw new Error(
-      "Haptics engine not initialized. Call initializeHaptics() first."
+      "Haptics engine not initialized. Call initializeHaptics() first.",
     );
   }
 
@@ -87,7 +87,7 @@ export async function createHapticPlayer(
 export async function playAHAP(ahap: AHAPFile | string): Promise<void> {
   if (!enginePrepared) {
     throw new Error(
-      "Haptics engine not initialized. Call initializeHaptics() first."
+      "Haptics engine not initialized. Call initializeHaptics() first.",
     );
   }
 
@@ -106,11 +106,11 @@ export async function playAHAP(ahap: AHAPFile | string): Promise<void> {
  * @returns Promise<HapticsPlayer> - Player instance
  */
 export async function createPlayerFromAHAP(
-  ahap: AHAPFile | string
+  ahap: AHAPFile | string,
 ): Promise<HapticsPlayer> {
   if (!enginePrepared) {
     throw new Error(
-      "Haptics engine not initialized. Call initializeHaptics() first."
+      "Haptics engine not initialized. Call initializeHaptics() first.",
     );
   }
 
@@ -189,7 +189,7 @@ export class HapticsPlayer {
   async sendParameter(
     parameterId: HapticDynamicParameterID,
     value: number,
-    time = 0
+    time = 0,
   ): Promise<void> {
     if (this.isDestroyed) {
       throw new Error("Player has been destroyed");
@@ -204,7 +204,7 @@ export class HapticsPlayer {
         this.playerId,
         parameterId,
         value,
-        time
+        time,
       );
     } catch (error) {
       console.error("[torch-haptics] Failed to send parameter", error);
