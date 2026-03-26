@@ -1,5 +1,8 @@
 # torch-haptics
 
+[![npm version](https://img.shields.io/npm/v/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
+[![npm downloads](https://img.shields.io/npm/dm/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
+
 Core Haptics for Expo on **iOS** — a TypeScript-friendly API for custom haptic patterns, players, dynamic parameters, and AHAP playback.
 
 ## Platform support
