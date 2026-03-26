@@ -205,16 +205,6 @@ npx expo run:ios
 
 Use a physical device for the most representative haptic feedback.
 
-## Migrating from a local monorepo module
-
-If you previously used a copy of this module under something like `apps/mobile/modules/torch-haptics`:
-
-1. Publish or install `torch-haptics` from npm.
-2. Add `"torch-haptics": "^x.x.x"` to your app’s `package.json`.
-3. Remove the local module folder.
-4. Change imports from your alias (e.g. `@/modules/torch-haptics`) to `torch-haptics`.
-5. On universal apps, gate all usage to iOS as described above.
-
 ## License
 
 MIT — see [LICENSE](./LICENSE).
