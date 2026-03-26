@@ -1,73 +1,147 @@
-import { useEvent } from 'expo';
-import TorchHaptics, { TorchHapticsView } from 'torch-haptics';
-import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { HapticsEngine, type HapticPattern } from "torch-haptics";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Button,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+} from "react-native-safe-area-context";
+
+const samplePattern: HapticPattern = {
+  Pattern: [
+    {
+      Event: {
+        Time: 0,
+        EventType: "HapticTransient",
+        EventParameters: [
+          { ParameterID: "HapticIntensity", ParameterValue: 1 },
+          { ParameterID: "HapticSharpness", ParameterValue: 0.5 },
+        ],
+      },
+    },
+  ],
+};
 
 export default function App() {
-  const onChangePayload = useEvent(TorchHaptics, 'onChange');
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
+  const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<string>("");
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") {
+      setStatus("This example runs on iOS only (Core Haptics).");
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const ok = await HapticsEngine.initialize();
+      if (cancelled) return;
+      setReady(ok);
+      setLoading(false);
+      setStatus(
+        ok
+          ? HapticsEngine.supportsHaptics()
+            ? "Engine ready. Tap a button to play haptics."
+            : "Device reports no haptics support."
+          : "Failed to prepare haptics engine."
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+      HapticsEngine.stop();
+    };
+  }, []);
+
+  const onPlayTransient = useCallback(async () => {
+    if (!ready) return;
+    try {
+      await HapticsEngine.play(samplePattern);
+      setStatus("Played transient pattern.");
+    } catch (e) {
+      setStatus(`Error: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }, [ready]);
+
+  if (Platform.OS !== "ios") {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.warn}>{status}</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.hint}>Preparing haptics…</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{TorchHaptics.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{TorchHaptics.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <Text style={styles.title}>torch-haptics example</Text>
+        <Text style={styles.status}>{status}</Text>
+        <View style={styles.row}>
           <Button
-            title="Set value"
-            onPress={async () => {
-              await TorchHaptics.setValueAsync('Hello from JS!');
-            }}
+            title="Play transient"
+            onPress={onPlayTransient}
+            disabled={!ready}
           />
-        </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
-        </Group>
-        <Group name="Views">
-          <TorchHapticsView
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-            style={styles.view}
-          />
-        </Group>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function Group(props: { name: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.group}>
-      <Text style={styles.groupHeader}>{props.name}</Text>
-      {props.children}
-    </View>
-  );
-}
-
-const styles = {
-  header: {
-    fontSize: 30,
-    margin: 20,
-  },
-  groupHeader: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  group: {
-    margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-  },
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee',
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
   },
-  view: {
-    flex: 1,
-    height: 200,
+  scroll: {
+    padding: 24,
   },
-};
+  title: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  status: {
+    fontSize: 15,
+    color: "#333",
+    marginBottom: 20,
+  },
+  hint: {
+    marginTop: 12,
+    textAlign: "center",
+  },
+  warn: {
+    padding: 24,
+    fontSize: 16,
+  },
+  row: {
+    gap: 12,
+  },
+});

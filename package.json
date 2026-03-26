@@ -1,9 +1,17 @@
 {
   "name": "torch-haptics",
   "version": "0.1.0",
-  "description": "TBD",
+  "description": "A Core Haptics wrapper for Expo that provides a TypeScript-friendly API for creating custom haptic patterns on iOS. Features include full Core Haptics API support, simple one-shot haptic playback, advanced player control with dynamic parameters, AHAP file support, looping/continuous patterns, and non-intrusive audio playback.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "files": [
+    "build",
+    "ios",
+    "src",
+    "expo-module.config.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -12,8 +20,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "open:ios": "xed example/ios"
   },
   "keywords": [
     "react-native",
@@ -21,7 +28,10 @@
     "torch-haptics",
     "TorchHaptics"
   ],
-  "repository": "https://github.com/AswinTorch/torch-haptics",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AswinTorch/torch-haptics.git"
+  },
   "bugs": {
     "url": "https://github.com/AswinTorch/torch-haptics/issues"
   },
@@ -30,10 +40,11 @@
   "homepage": "https://github.com/AswinTorch/torch-haptics#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.1.1",
+    "@types/react": "~19.2.2",
     "expo-module-scripts": "^55.0.2",
     "expo": "^55.0.8",
-    "react-native": "0.82.1"
+    "react": "19.2.4",
+    "react-native": "0.83.4"
   },
   "peerDependencies": {
     "expo": "*",
