@@ -29,6 +29,10 @@ const samplePattern: HapticPattern = {
   ],
 };
 
+function useNativeHapticsSupported() {
+  return Platform.OS === "ios" || Platform.OS === "android";
+}
+
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -42,9 +46,13 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<string>("");
 
+  const nativeOk = useNativeHapticsSupported();
+
   useEffect(() => {
-    if (Platform.OS !== "ios") {
-      setStatus("This example runs on iOS only (Core Haptics).");
+    if (!nativeOk) {
+      setStatus(
+        "This example needs a dev build on iOS or Android. Web is not supported."
+      );
       setLoading(false);
       return;
     }
@@ -58,9 +66,9 @@ function AppContent() {
       setStatus(
         ok
           ? HapticsEngine.supportsHaptics()
-            ? "Engine ready. Tap a button to play haptics."
-            : "Device reports no haptics support."
-          : "Failed to prepare haptics engine."
+            ? "Ready. Tap a button to play haptics."
+            : "Device reports no vibration / haptics support."
+          : "Failed to prepare haptics."
       );
     })();
 
@@ -68,7 +76,7 @@ function AppContent() {
       cancelled = true;
       HapticsEngine.stop();
     };
-  }, []);
+  }, [nativeOk]);
 
   const onPlayTransient = useCallback(async () => {
     if (!ready) return;
@@ -80,7 +88,7 @@ function AppContent() {
     }
   }, [ready]);
 
-  if (Platform.OS !== "ios") {
+  if (!nativeOk) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.warn}>{status}</Text>

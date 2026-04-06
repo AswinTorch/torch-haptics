@@ -3,27 +3,36 @@
 [![npm version](https://img.shields.io/npm/v/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
 [![npm downloads](https://img.shields.io/npm/dm/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
 
-Core Haptics for Expo on **iOS** — a TypeScript-friendly API for custom haptic patterns, players, dynamic parameters, and AHAP playback.
+TypeScript-friendly haptics for Expo: **Core Haptics** on **iOS** (patterns, advanced players, AHAP) and **`Vibrator` / `VibrationEffect`** on **Android** (subset; see matrix below). **Web is not supported.**
 
 ## Platform support
 
-**iOS only.** This package ships native code for Apple’s Core Haptics. There is no Android or web implementation.
+| Capability | iOS | Android |
+|------------|-----|---------|
+| `HapticsEngine.initialize` / `stop` / `supportsHaptics` | Yes | Yes |
+| `HapticsEngine.play` with `HapticTransient` / `HapticContinuous` | Core Haptics | `VibrationEffect` (predefined click on API 29+ for transient; waveform for continuous). **First event in `Pattern` only** on Android. |
+| `createPlayer` / `startPlayer` / `stopPlayer` / `destroy` | Advanced Core Haptics player | Same JS API; vibration session on default vibrator (no mid-play curves). |
+| `sendParameter` / `scheduleParameterCurve` | Yes | **Not supported** (throws; use iOS for dynamic parameters). |
+| `playAHAP` / `createPlayerFromAHAP` | Yes | **Not supported** (throws; AHAP is Apple-only). |
 
-If your Expo app targets Android or web, **do not** import this module on those platforms unless you guard usage (for example `Platform.OS === "ios"` or a lazy `import()`). Otherwise `requireNativeModule` may throw at load time.
+**Expo Go:** not supported (custom native code). Use a **development build** ([`expo run:ios`](https://docs.expo.dev/develop/tools/#expo-run-commands) / [`expo run:android`](https://docs.expo.dev/develop/tools/#expo-run-commands), or [EAS Build](https://docs.expo.dev/build/introduction/)).
+
+**Web:** do not import in web bundles unless you use a lazy `import()` or platform guard, or `requireNativeModule` will fail.
+
+Android behavior follows [Android haptics guidance](https://developer.android.com/develop/ui/views/haptics/haptics-apis): predefined effects where possible, `AudioAttributes` for sonification usage, amplitude waveforms when `hasAmplitudeControl()` is true.
 
 ## Install
-
-This library includes **native iOS code**. It does **not** run inside **Expo Go** — use a **development build** ([`npx expo run:ios`](https://docs.expo.dev/develop/tools/#expo-run-commands), Xcode, or [EAS Build](https://docs.expo.dev/build/introduction/)).
-
-Add the package with Expo’s installer so versions match your SDK:
 
 ```bash
 npx expo install torch-haptics
 ```
 
-Then create or refresh your native project and run on device or simulator as you usually do for a dev client (for example `npx expo prebuild` if you use [CNG](https://docs.expo.dev/workflow/prebuild/), then `npx expo run:ios`). Installing pods is normally handled as part of that iOS build; you only need to run `npx pod-install` (or `pod install` inside `ios/`) yourself if you are opening the Xcode workspace directly or fixing a stale CocoaPods state.
+Then use **prebuild** if you use [CNG](https://docs.expo.dev/workflow/prebuild/), and run a dev client:
 
-For **bare React Native** (no Expo app entry), use `npm install torch-haptics`, ensure [`expo` is installed](https://docs.expo.dev/bare/installing-expo-modules/), then `npx pod-install` from the app root is the typical CocoaPods step.
+- **iOS:** `npx expo run:ios` (pods usually run as part of the build).
+- **Android:** `npx expo run:android`.
+
+For **bare React Native**, use `npm install torch-haptics`, ensure [`expo` is installed](https://docs.expo.dev/bare/installing-expo-modules/), then run `npx pod-install` (iOS) and a normal Gradle sync (Android).
 
 ## Usage
 
@@ -102,7 +111,9 @@ await HapticsEngine.play(rumble);
 
 ### Advanced player (start, stop, dynamic parameters)
 
-`createPlayer` returns a `HapticsPlayer` backed by Core Haptics’ **advanced** player. Start playback, then adjust intensity/sharpness (or audio controls for audio-capable patterns) while it runs. Always `destroy()` when finished.
+**iOS:** `createPlayer` returns a `HapticsPlayer` backed by Core Haptics’ **advanced** player. Start playback, then adjust intensity/sharpness (or audio controls for audio-capable patterns) while it runs.
+
+**Android:** the same API plays the pattern via `VibrationEffect`; **`sendParameter` is not supported** and will throw. Always `destroy()` when finished on both platforms.
 
 ```ts
 const pattern: HapticPattern = {
@@ -136,7 +147,7 @@ Dynamic parameter IDs include `HapticIntensityControl`, `HapticSharpnessControl`
 
 ### Play an AHAP pattern once
 
-AHAP is Apple’s JSON format for haptic + audio patterns. Pass an object (serialized for you) or a **JSON string**. The payload must include a top-level `Pattern` array compatible with Core Haptics (same event shape as above).
+**iOS only.** AHAP is Apple’s JSON format for haptic + audio patterns. Pass an object (serialized for you) or a **JSON string**. The payload must include a top-level `Pattern` array compatible with Core Haptics (same event shape as above).
 
 ```ts
 const ahapFromFile = `{
@@ -162,7 +173,7 @@ You can also pass a parsed object that satisfies `AHAPFile` / the same JSON shap
 
 ### AHAP-based advanced player
 
-Create a player from AHAP JSON for **start/stop** control and **dynamic parameters** on that pattern — same `HapticsPlayer` API as `createPlayer`.
+**iOS only.** Create a player from AHAP JSON for **start/stop** control and **dynamic parameters** on that pattern — same `HapticsPlayer` API as `createPlayer`.
 
 ```ts
 const ahapJson = `{
@@ -202,11 +213,11 @@ From the package repo:
 ```bash
 cd example
 npm install
-npx expo prebuild --clean --platform ios
-npx expo run:ios
+npx expo prebuild --clean --platform ios   # and/or --platform android
+npx expo run:ios                             # or: npx expo run:android
 ```
 
-Use a physical device for the most representative haptic feedback.
+Use a **physical device** for the most representative feedback (especially on iOS Core Haptics).
 
 ## License
 

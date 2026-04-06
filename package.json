@@ -1,11 +1,12 @@
 {
   "name": "torch-haptics",
-  "version": "0.1.0",
-  "description": "A Core Haptics wrapper for Expo that provides a TypeScript-friendly API for creating custom haptic patterns on iOS. Features include full Core Haptics API support, simple one-shot haptic playback, advanced player control with dynamic parameters, AHAP file support, looping/continuous patterns, and non-intrusive audio playback.",
+  "version": "0.2.0",
+  "description": "Haptic feedback for Expo: Core Haptics on iOS (patterns, players, AHAP) and Vibrator / VibrationEffect on Android (patterns and players; AHAP and dynamic parameter curves are iOS-only). TypeScript-first API.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
     "build",
+    "android",
     "ios",
     "src",
     "expo-module.config.json",

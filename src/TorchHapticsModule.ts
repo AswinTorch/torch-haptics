@@ -50,6 +50,7 @@ declare class TorchHapticsModule extends NativeModule<TorchHapticsModuleEvents> 
 
   /**
    * Schedule a dynamic parameter change on a playing pattern.
+   * **iOS only.** On Android this call throws; use `Platform.OS === "ios"` or try/catch if you share code.
    * @param playerId - The player ID
    * @param parameterId - The parameter to change
    * @param value - The new value (0.0 - 1.0)
@@ -70,12 +71,14 @@ declare class TorchHapticsModule extends NativeModule<TorchHapticsModuleEvents> 
 
   /**
    * Play a haptic pattern from an AHAP file (Apple Haptic and Audio Pattern).
+   * **iOS only.** On Android this call throws.
    * @param ahapJson - JSON string of AHAP file content
    */
   playPatternFromAHAP(ahapJson: string): Promise<void>;
 
   /**
    * Create a player from an AHAP file.
+   * **iOS only.** On Android this call throws.
    * @param ahapJson - JSON string of AHAP file content
    * @returns Promise<string> - Player ID
    */
