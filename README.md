@@ -1,5 +1,9 @@
 # torch-haptics
 
+<p align="center">
+  <img src="./assets/logo.png" alt="torch-haptics logo" width="160" />
+</p>
+
 [![npm version](https://img.shields.io/npm/v/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
 [![npm downloads](https://img.shields.io/npm/dm/torch-haptics)](https://www.npmjs.com/package/torch-haptics)
 
